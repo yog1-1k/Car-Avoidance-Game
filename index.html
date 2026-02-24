@@ -626,7 +626,9 @@
             lastSpawnTime: 0,
             gameLoopId: null,
             darkMode: false,
-            keysPressed: {}
+            keysPressed: {},
+            mobileLeftPressed: false,
+            mobileRightPressed: false
         };
 
         // ===== DOM ELEMENTS =====
@@ -681,19 +683,45 @@
             document.addEventListener('keydown', handleKeyDown);
             document.addEventListener('keyup', handleKeyUp);
 
-            // Mobile controls
+            // Mobile controls - hold to move
             elements.btnLeft.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                movePlayer(-1);
+                state.mobileLeftPressed = true;
             });
+            elements.btnLeft.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                state.mobileLeftPressed = false;
+            });
+            
             elements.btnRight.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                movePlayer(1);
+                state.mobileRightPressed = true;
+            });
+            elements.btnRight.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                state.mobileRightPressed = false;
             });
 
-            // Mouse support for mobile controls
-            elements.btnLeft.addEventListener('mousedown', () => movePlayer(-1));
-            elements.btnRight.addEventListener('mousedown', () => movePlayer(1));
+            // Mouse support - hold to move
+            elements.btnLeft.addEventListener('mousedown', () => {
+                state.mobileLeftPressed = true;
+            });
+            elements.btnLeft.addEventListener('mouseup', () => {
+                state.mobileLeftPressed = false;
+            });
+            elements.btnLeft.addEventListener('mouseleave', () => {
+                state.mobileLeftPressed = false;
+            });
+            
+            elements.btnRight.addEventListener('mousedown', () => {
+                state.mobileRightPressed = true;
+            });
+            elements.btnRight.addEventListener('mouseup', () => {
+                state.mobileRightPressed = false;
+            });
+            elements.btnRight.addEventListener('mouseleave', () => {
+                state.mobileRightPressed = false;
+            });
 
             // Dark mode toggle
             elements.darkModeToggle.addEventListener('click', toggleDarkMode);
@@ -811,6 +839,14 @@
                 movePlayer(-1);
             }
             if (state.keysPressed['ArrowRight']) {
+                movePlayer(1);
+            }
+
+            // Handle mobile button input - hold to move continuously
+            if (state.mobileLeftPressed) {
+                movePlayer(-1);
+            }
+            if (state.mobileRightPressed) {
                 movePlayer(1);
             }
 
